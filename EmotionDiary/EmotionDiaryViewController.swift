@@ -25,6 +25,8 @@ class EmotionDiaryViewController: UIViewController {
     @IBOutlet var emotionButtonCollection: [UIButton]!
     @IBOutlet var emotinoLabelCollection: [UILabel]!
     
+    @IBOutlet var resetButton: UIButton!
+    
     /* 노가다st
     @IBOutlet var emotion1Label: UILabel!
     @IBOutlet var emotion2Label: UILabel!
@@ -81,6 +83,7 @@ class EmotionDiaryViewController: UIViewController {
         
         setEmotionButtonColletcion()
         setEmotionLabelColletcion()
+        setResetButton()
 
       
     }
@@ -106,19 +109,35 @@ class EmotionDiaryViewController: UIViewController {
     
     func setEmotionLabelColletcion() {
         var index: Int = 0
+        var key = String(index)
+        
         for label in emotinoLabelCollection {
-            setEmotionLabel(label: label, text: "\(emotionArray[index]) \(countArray[index])")
+            let countValue = UserDefaults.standard.integer(forKey: key)
+            setEmotionLabel(label: label, text: "\(emotionArray[index]) \(countValue)")
             index += 1
+            key = String(index)
         }
     }
     
+    func setResetButton() {
+        resetButton.setTitle("RESET", for: .normal)
+        resetButton.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
+        resetButton.backgroundColor = .white
+        resetButton.layer.cornerRadius = 10
+        resetButton.layer.borderColor = UIColor.darkGray.cgColor
+        resetButton.layer.borderWidth = 2
+        resetButton.tintColor = .lightGray
+    }
     
     @IBAction func emotionButtonTapped(_ sender: UIButton) {
         let index = sender.tag
         
-        countArray[index] += 1
+        var countValue = UserDefaults.standard.integer(forKey: String(index))
+        countValue += 1
+        UserDefaults.standard.set(countValue, forKey: String(index))
+        print("countValue저장")
         
-        emotinoLabelCollection[index].text = "\(emotionArray[index]) \(countArray[index])"
+        emotinoLabelCollection[index].text = "\(emotionArray[index]) \(countValue)"
         
         /* 노가다st
         switch index {
@@ -147,6 +166,16 @@ class EmotionDiaryViewController: UIViewController {
 
         
     }
+    
+    @IBAction func resetButtonTapped(_ sender: UIButton) {
+        for key in UserDefaults.standard.dictionaryRepresentation().keys {
+            UserDefaults.standard.removeObject(forKey: key.description)
+        }
+        print("userdefault 초기화")
+        setEmotionLabelColletcion()
+        
+    }
+    
     
     
 }
